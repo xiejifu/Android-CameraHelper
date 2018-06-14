@@ -71,8 +71,10 @@ public class CameraHelper {
         return photoUri;
     }
 
-    private boolean checkIntentFeature(@NonNull Context context, @NonNull Intent testIntent) {
-        return testIntent.resolveActivity(context.getPackageManager()) != null;
+    private boolean checkCameraFeature(@NonNull Context context, @NonNull Intent testIntent) {
+        PackageManager packageManager = context.getPackageManager();
+        return (testIntent.resolveActivity(context.getPackageManager()) != null) &&
+                (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA));
     }
 
     private File getInternalCameraFile(@NonNull Context context) {
