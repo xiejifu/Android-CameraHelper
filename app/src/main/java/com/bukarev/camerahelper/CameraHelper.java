@@ -262,6 +262,41 @@ public class CameraHelper {
         } else if (requestCode == cameraRequestCode && resultCode == FragmentActivity.RESULT_OK) {
             ImageHelper.handleGalleryImage(getActivity(), cameraHelper.getCurrentUri(), 90)
                     .subscribe(this::startNext, throwable -> MessageHelpers.failCamera(getActivity()));
+    public static Builder newBuilder(FragmentActivity fragmentActivity, int photoRequestCode, int galleryRequestCode, int cameraPermissionRequestCode, int storagePermissionRequestCode) {
+        return new CameraHelper().new Builder(fragmentActivity, photoRequestCode, galleryRequestCode, cameraPermissionRequestCode, storagePermissionRequestCode);
+    }
+
+    public static Builder newBuilder(Fragment fragment, int photoRequestCode, int galleryRequestCode, int cameraPermissionRequestCode, int storagePermissionRequestCode) {
+        return new CameraHelper().new Builder(fragment, photoRequestCode, galleryRequestCode, cameraPermissionRequestCode, storagePermissionRequestCode);
+    }
+
+    public class Builder {
+
+        private Builder(FragmentActivity fragmentActivity, int photoRequestCode, int galleryRequestCode, int cameraPermissionRequestCode, int storagePermissionRequestCode) {
+            CameraHelper.this.fragmentActivity = fragmentActivity;
+            CameraHelper.this.photoRequestCode = photoRequestCode;
+            CameraHelper.this.galleryRequestCode = galleryRequestCode;
+
+            CameraHelper.this.cameraPermissionsRequestCode = cameraPermissionRequestCode;
+            CameraHelper.this.storagePermissionsRequestCode = storagePermissionRequestCode;
+        }
+
+        private Builder(Fragment fragment, int photoRequestCode, int galleryRequestCode, int cameraPermissionRequestCode, int storagePermissionRequestCode) {
+            CameraHelper.this.fragment = fragment;
+            CameraHelper.this.photoRequestCode = photoRequestCode;
+            CameraHelper.this.galleryRequestCode = galleryRequestCode;
+
+            CameraHelper.this.cameraPermissionsRequestCode = cameraPermissionRequestCode;
+            CameraHelper.this.storagePermissionsRequestCode = storagePermissionRequestCode;
+        }
+
+        public Builder setErrorInterface(OnCameraResult errorInterface) {
+            CameraHelper.this.errorInterface = errorInterface;
+            return this;
+        }
+
+        public CameraHelper build() {
+            return CameraHelper.this;
         }
     }
 }
