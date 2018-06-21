@@ -174,16 +174,18 @@ public class CameraHelper {
 
     @SuppressWarnings("PointlessBooleanExpression")
     public void startCameraWithPermission(boolean internal, boolean selfie) {
+        this.isInternal = internal;
+        this.isSelfie = selfie;
         try {
             CameraPermission permissions = new CameraPermission(fragmentActivity, fragment);
             FragmentActivity activityContext = getContextFragmentActivity();
             if (permissions.hasPermissionForCamera() == false) {
-                permissions.requestPermissionsForCamera(cameraRequestCode);
+                permissions.requestPermissionsForCamera(cameraPermissionsRequestCode);
             } else if (internal) {
                 startCamera(activityContext, internal, selfie, photoRequestCode);
             } else {
                 if (permissions.hasPermissionForStorage() == false) {
-                    permissions.requestPermissionsForStorage(storageRequestCode);
+                    permissions.requestPermissionsForStorage(storagePermissionsRequestCode);
                 } else {
                     startCamera(activityContext, internal, selfie, photoRequestCode);
                 }
@@ -195,14 +197,21 @@ public class CameraHelper {
         }
     }
 
-    public void startPickingFromGallery(int requestCode) throws CameraException {
+    public void startPickingFromGallery() {
         Intent photoPickerIntent = prepareGalleryIntent();
-
-        if (photoPickerIntent != null) {
-            setCurrentUri(null);
-            startIntentForResult(photoPickerIntent, requestCode);
-        } else {
-            throw new CameraException("No resolve activity for camera or fail create image file");
+        try {
+            if (photoPickerIntent != null) {
+                setCurrentUri(null);
+                startIntentForResult(photoPickerIntent, galleryRequestCode);
+            } else {
+                if (errorInterface != null) {
+                    errorInterface.onCameraError(new CameraException("No resolve activity for camera or fail create image file"));
+                }
+            }
+        } catch (Throwable error) {
+            if (errorInterface != null) {
+                errorInterface.onCameraError(error);
+            }
         }
     }
 
