@@ -269,12 +269,21 @@ public class CameraHelper {
     }
 
     public File onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == cameraRequestCode && resultCode == FragmentActivity.RESULT_OK) {
-            ImageHelper.handleGalleryImage(getActivity(), cameraHelper.getCurrentUri(), 90)
-                    .subscribe(this::startNext, throwable -> MessageHelpers.failCamera(getActivity()));
-        } else if (requestCode == cameraRequestCode && resultCode == FragmentActivity.RESULT_OK) {
-            ImageHelper.handleGalleryImage(getActivity(), cameraHelper.getCurrentUri(), 90)
-                    .subscribe(this::startNext, throwable -> MessageHelpers.failCamera(getActivity()));
+        try {
+            if (requestCode == photoRequestCode && resultCode == FragmentActivity.RESULT_OK) {
+                return ImageHelper.handleGalleryImage(getContextFragmentActivity(), getCurrentUri());
+            } else if (requestCode == galleryRequestCode && resultCode == FragmentActivity.RESULT_OK) {
+                return ImageHelper.handleGalleryImage(getContextFragmentActivity(), getCurrentUri());
+            }
+        } catch (Throwable error) {
+            if (errorInterface != null) {
+                errorInterface.onCameraError(error);
+            }
+        }
+        return null;
+    }
+
+
     public static Builder newBuilder(FragmentActivity fragmentActivity, int photoRequestCode, int galleryRequestCode, int cameraPermissionRequestCode, int storagePermissionRequestCode) {
         return new CameraHelper().new Builder(fragmentActivity, photoRequestCode, galleryRequestCode, cameraPermissionRequestCode, storagePermissionRequestCode);
     }
