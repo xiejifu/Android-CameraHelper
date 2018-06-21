@@ -14,8 +14,11 @@ public class MainActivity extends AppCompatActivity implements OnCameraResult {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cameraHelper = CameraHelper.createCameraHelpersWith(this, this, 1, 2, 3);
+        cameraHelper = CameraHelper.newBuilder(this, 1, 2, 3, 4)
+                .setErrorInterface(this)
+                .build();
         cameraHelper.startCameraWithPermission(true, false);
+        cameraHelper.startPickingFromGallery();
     }
 
     @Override
@@ -33,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements OnCameraResult {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        cameraHelper.onActivityResult(requestCode, resultCode, data);
+        File file = cameraHelper.onActivityResult(requestCode, resultCode, data);
+        String qwe = "";
     }
 
     @Override
@@ -44,11 +48,6 @@ public class MainActivity extends AppCompatActivity implements OnCameraResult {
 
     @Override
     public void onCameraError(Throwable error) {
-
-    }
-
-    @Override
-    public void onCapture(File image) {
 
     }
 }
