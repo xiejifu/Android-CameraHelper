@@ -221,6 +221,13 @@ public class CameraHelper {
         if (photoUri != null) {
             savedInstanceState.putString(CameraConstants.PHOTO_URI_STATE, photoUri.toString());
         }
+        savedInstanceState.putBoolean(CameraConstants.IS_SELFIE_STATE, isSelfie);
+        savedInstanceState.putBoolean(CameraConstants.IS_INTERNAL_STATE, isInternal);
+
+        savedInstanceState.putInt(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE, cameraPermissionsRequestCode);
+        savedInstanceState.putInt(CameraConstants.STORAGE_PERMISSIONS_REQUEST_CODE, storagePermissionsRequestCode);
+        savedInstanceState.putInt(CameraConstants.PHOTO_REQUEST_CODE, photoRequestCode);
+        savedInstanceState.putInt(CameraConstants.GALLERY_REQUEST_CODE, galleryRequestCode);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -228,15 +235,33 @@ public class CameraHelper {
             if (savedInstanceState.containsKey(CameraConstants.PHOTO_URI_STATE)) {
                 photoUri = Uri.parse(savedInstanceState.getString(CameraConstants.PHOTO_URI_STATE));
             }
+            if (savedInstanceState.containsKey(CameraConstants.IS_SELFIE_STATE)) {
+                isSelfie = savedInstanceState.getBoolean(CameraConstants.IS_SELFIE_STATE);
+            }
+            if (savedInstanceState.containsKey(CameraConstants.IS_INTERNAL_STATE)) {
+                isInternal = savedInstanceState.getBoolean(CameraConstants.IS_INTERNAL_STATE);
+            }
+            if (savedInstanceState.containsKey(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE)) {
+                cameraPermissionsRequestCode = savedInstanceState.getInt(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE);
+            }
+            if (savedInstanceState.containsKey(CameraConstants.STORAGE_PERMISSIONS_REQUEST_CODE)) {
+                storagePermissionsRequestCode = savedInstanceState.getInt(CameraConstants.STORAGE_PERMISSIONS_REQUEST_CODE);
+            }
+            if (savedInstanceState.containsKey(CameraConstants.PHOTO_REQUEST_CODE)) {
+                photoRequestCode = savedInstanceState.getInt(CameraConstants.PHOTO_REQUEST_CODE);
+            }
+            if (savedInstanceState.containsKey(CameraConstants.GALLERY_REQUEST_CODE)) {
+                galleryRequestCode = savedInstanceState.getInt(CameraConstants.GALLERY_REQUEST_CODE);
+            }
         }
     }
 
     public void onPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == cameraRequestCode) {
+        if (requestCode == cameraPermissionsRequestCode) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && Manifest.permission.CAMERA.equals(permissions[0])) {
                 startCameraWithPermission(isInternal, isSelfie);
             }
-        } else if (requestCode == storageRequestCode) {
+        } else if (requestCode == storagePermissionsRequestCode) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                 startCameraWithPermission(isInternal, isSelfie);
             }
