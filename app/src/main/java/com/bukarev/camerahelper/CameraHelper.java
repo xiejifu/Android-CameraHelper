@@ -14,39 +14,27 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.List;
 
 public class CameraHelper {
-    private final FragmentActivity fragmentActivity;
-    private final Fragment fragment;
-    private final int photoRequestCode;
-    private final int cameraRequestCode;
-    private final int storageRequestCode;
+    //builder vars
+    private FragmentActivity fragmentActivity;
+    private Fragment fragment;
+    private int photoRequestCode;
+    private int galleryRequestCode;
+    private int cameraPermissionsRequestCode;
+    private int storagePermissionsRequestCode;
+    private OnCameraResult errorInterface;
+    //state vars
     private Uri photoUri = null;
     private boolean isInternal;
     private boolean isSelfie;
-    private final OnCameraResult errorInterface;
 
-    public static CameraHelper createCameraHelpersWith(AppCompatActivity activity, OnCameraResult errorInterface, int photoRequestCode, int cameraRequestCode, int storageRequestCode) {
-        return new CameraHelper(activity, null, errorInterface, photoRequestCode, cameraRequestCode, storageRequestCode);
+    private CameraHelper() {
+
     }
-
-    public static CameraHelper createCameraHelpersWith(Fragment fragment, OnCameraResult errorInterface, int photoRequestCode, int cameraRequestCode, int storageRequestCode) {
-        return new CameraHelper(null, fragment, errorInterface, photoRequestCode, cameraRequestCode, storageRequestCode);
-    }
-
-    private CameraHelper(AppCompatActivity activity, Fragment fragment, OnCameraResult errorInterface, int photoRequestCode, int cameraRequestCode, int storageRequestCode) {
-        this.fragmentActivity = activity;
-        this.fragment = fragment;
-        this.photoRequestCode = photoRequestCode;
-        this.cameraRequestCode = cameraRequestCode;
-        this.storageRequestCode = storageRequestCode;
-        this.errorInterface = errorInterface;
-    }
-
 
     private FragmentActivity getContextFragmentActivity() {
         if (fragmentActivity != null) {
