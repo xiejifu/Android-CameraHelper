@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper;
+package com.bukarev.camerahelper.CameraHelper;
 
 import android.Manifest;
 import android.content.Context;
@@ -26,7 +26,7 @@ public class CameraHelper {
     private int galleryRequestCode;
     private int cameraPermissionsRequestCode;
     private int storagePermissionsRequestCode;
-    private OnCameraResult errorInterface;
+    private CameraErrorInterface errorInterface;
     //state vars
     private Uri photoUri = null;
     private boolean isInternal;
@@ -321,7 +321,7 @@ public class CameraHelper {
             CameraHelper.this.storagePermissionsRequestCode = storagePermissionRequestCode;
         }
 
-        public Builder setErrorInterface(OnCameraResult errorInterface) {
+        public Builder setErrorInterface(CameraErrorInterface errorInterface) {
             CameraHelper.this.errorInterface = errorInterface;
             return this;
         }

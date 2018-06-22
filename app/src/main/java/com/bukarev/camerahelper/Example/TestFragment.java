@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper;
+package com.bukarev.camerahelper.Example;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;

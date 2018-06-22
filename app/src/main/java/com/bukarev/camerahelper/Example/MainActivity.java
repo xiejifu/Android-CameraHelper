@@ -1,13 +1,17 @@
-package com.bukarev.camerahelper;
+package com.bukarev.camerahelper.Example;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
+import com.bukarev.camerahelper.CameraHelper.CameraHelper;
+import com.bukarev.camerahelper.CameraHelper.CameraErrorInterface;
+import com.bukarev.camerahelper.R;
+
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity implements OnCameraResult {
+public class MainActivity extends AppCompatActivity implements CameraErrorInterface {
     private CameraHelper cameraHelper;
 
     @Override

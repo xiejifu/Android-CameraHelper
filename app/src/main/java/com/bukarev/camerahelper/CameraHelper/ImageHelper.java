@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper;
+package com.bukarev.camerahelper.CameraHelper;
 
 import android.content.Context;
 import android.net.Uri;
