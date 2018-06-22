@@ -112,7 +112,7 @@ public class CameraHelper {
                 return null;
             }
         } catch (Throwable ignored) {
-
+            // TODO error handling
         }
         return null;
     }
