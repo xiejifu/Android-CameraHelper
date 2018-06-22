@@ -165,7 +165,7 @@ public class CameraHelper {
             takePictureIntent = prepareCameraIntentForExternalStorage(contextActivity, selfie);
 
         if (takePictureIntent != null) {
-            setCurrentUri(null);
+           // setCurrentUri(null);
             startIntentForResult(takePictureIntent, requestCode);
         } else {
             throw new CameraException("Cant resolve activity for camera or fail create image file");
