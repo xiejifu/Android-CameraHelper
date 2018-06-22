@@ -282,7 +282,7 @@ public class CameraHelper {
             if (requestCode == photoRequestCode && resultCode == FragmentActivity.RESULT_OK) {
                 return ImageHelper.handleGalleryImage(getContextFragmentActivity(), getCurrentUri());
             } else if (requestCode == galleryRequestCode && resultCode == FragmentActivity.RESULT_OK) {
-                return ImageHelper.handleGalleryImage(getContextFragmentActivity(), getCurrentUri());
+                return ImageHelper.handleGalleryImage(getContextFragmentActivity(), data.getData());
             }
         } catch (Throwable error) {
             if (errorInterface != null) {
