@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity implements CameraErrorInterf
         cameraHelper = CameraHelper.newBuilder(this, PHOTO_REQUEST_CODE, GALLERY_REQUEST_CODE, CAMERA_PERMISSION_CODE, STORAGE_PERMISSION_CODE)
                 .setErrorInterface(this)
                 .build();
-        //cameraHelper.startCameraWithPermission(true, false);
-        cameraHelper.startPickingFromGallery();
+        cameraHelper.startCameraWithPermission(false);
+        //cameraHelper.startPickingFromGallery();
     }
 
     @Override
