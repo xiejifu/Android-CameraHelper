@@ -29,7 +29,6 @@ public class CameraHelper {
     private CameraErrorInterface errorInterface;
     //state vars
     private Uri photoUri = null;
-    private boolean isInternal;
     private boolean isSelfie;
 
     private CameraHelper() {
@@ -55,7 +54,7 @@ public class CameraHelper {
         photoUri = uri;
     }
 
-    public Uri getCurrentUri() {
+    private Uri getCurrentUri() {
         return photoUri;
     }
 
@@ -68,15 +67,6 @@ public class CameraHelper {
     private File getInternalCameraFile(@NonNull Context context) {
         try {
             return CameraFileHelper.createInternalImageFile(context, CameraConstants.FILE_NAME_PREFIX, CameraConstants.FILE_NAME_EXTENSION);
-        } catch (Throwable ignored) {
-
-        }
-        return null;
-    }
-
-    private File getExternalCameraFile(@NonNull Context context) {
-        try {
-            return CameraFileHelper.createExternalImageFile(context, CameraConstants.FILE_NAME_PREFIX, CameraConstants.FILE_NAME_EXTENSION);
         } catch (Throwable ignored) {
 
         }
@@ -127,45 +117,16 @@ public class CameraHelper {
         }
     }
 
-    private Intent prepareCameraIntentForExternalStorage(FragmentActivity activity, boolean isSelfie) {
-        try {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            boolean cameraOk = checkCameraFeature(activity, takePictureIntent);
-            File imageFile = getExternalCameraFile(activity);
-            if (cameraOk && imageFile != null) {
-                Uri photoURI = Uri.fromFile(imageFile);
-                setCurrentUri(photoURI);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                grantUriPermissionsForLollipop(activity, takePictureIntent, photoURI);
-                if (isSelfie) {
-                    takePictureIntent.putExtra(CameraConstants.SELFIE_PARAM1, android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
-                    takePictureIntent.putExtra(CameraConstants.SELFIE_PARAM2, true);
-                }
-                return takePictureIntent;
-            } else {
-                return null;
-            }
-        } catch (Throwable ignored) {
-
-        }
-        return null;
-    }
-
     private Intent prepareGalleryIntent() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType(CameraConstants.IMAGE_MIME_TYPE);
         return photoPickerIntent;
     }
 
-    private void startCamera(FragmentActivity contextActivity, boolean internal, boolean selfie, int requestCode) throws CameraException {
-        Intent takePictureIntent;
-        if (internal)
-            takePictureIntent = prepareCameraIntentForInternalStorage(contextActivity, selfie);
-        else
-            takePictureIntent = prepareCameraIntentForExternalStorage(contextActivity, selfie);
+    private void startCamera(FragmentActivity contextActivity, boolean selfie, int requestCode) throws CameraException {
+        Intent takePictureIntent = prepareCameraIntentForInternalStorage(contextActivity, selfie);
 
         if (takePictureIntent != null) {
-           // setCurrentUri(null);
             startIntentForResult(takePictureIntent, requestCode);
         } else {
             throw new CameraException("Cant resolve activity for camera or fail create image file");
@@ -173,22 +134,17 @@ public class CameraHelper {
     }
 
     @SuppressWarnings("PointlessBooleanExpression")
-    public void startCameraWithPermission(boolean internal, boolean selfie) {
-        this.isInternal = internal;
-        this.isSelfie = selfie;
+    public void startCameraWithPermission(boolean isSelfie) {
+        this.isSelfie = isSelfie;
         try {
             CameraPermission permissions = new CameraPermission(fragmentActivity, fragment);
             FragmentActivity activityContext = getContextFragmentActivity();
             if (permissions.hasPermissionForCamera() == false) {
                 permissions.requestPermissionsForCamera(cameraPermissionsRequestCode);
-            } else if (internal) {
-                startCamera(activityContext, internal, selfie, photoRequestCode);
+            } else if (permissions.hasPermissionForStorage() == false) {
+                permissions.requestPermissionsForStorage(storagePermissionsRequestCode);
             } else {
-                if (permissions.hasPermissionForStorage() == false) {
-                    permissions.requestPermissionsForStorage(storagePermissionsRequestCode);
-                } else {
-                    startCamera(activityContext, internal, selfie, photoRequestCode);
-                }
+                startCamera(activityContext, isSelfie, photoRequestCode);
             }
         } catch (Throwable error) {
             if (errorInterface != null) {
@@ -231,7 +187,6 @@ public class CameraHelper {
             savedInstanceState.putString(CameraConstants.PHOTO_URI_STATE, photoUri.toString());
         }
         savedInstanceState.putBoolean(CameraConstants.IS_SELFIE_STATE, isSelfie);
-        savedInstanceState.putBoolean(CameraConstants.IS_INTERNAL_STATE, isInternal);
 
         savedInstanceState.putInt(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE, cameraPermissionsRequestCode);
         savedInstanceState.putInt(CameraConstants.STORAGE_PERMISSIONS_REQUEST_CODE, storagePermissionsRequestCode);
@@ -246,9 +201,6 @@ public class CameraHelper {
             }
             if (savedInstanceState.containsKey(CameraConstants.IS_SELFIE_STATE)) {
                 isSelfie = savedInstanceState.getBoolean(CameraConstants.IS_SELFIE_STATE);
-            }
-            if (savedInstanceState.containsKey(CameraConstants.IS_INTERNAL_STATE)) {
-                isInternal = savedInstanceState.getBoolean(CameraConstants.IS_INTERNAL_STATE);
             }
             if (savedInstanceState.containsKey(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE)) {
                 cameraPermissionsRequestCode = savedInstanceState.getInt(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE);
@@ -268,11 +220,11 @@ public class CameraHelper {
     public void onPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == cameraPermissionsRequestCode) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && Manifest.permission.CAMERA.equals(permissions[0])) {
-                startCameraWithPermission(isInternal, isSelfie);
+                startCameraWithPermission(isSelfie);
             }
         } else if (requestCode == storagePermissionsRequestCode) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                startCameraWithPermission(isInternal, isSelfie);
+                startCameraWithPermission(isSelfie);
             }
         }
     }

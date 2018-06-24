@@ -27,16 +27,4 @@ public class CameraFileHelper {
             return null;
         }
     }
-
-    public static File createExternalImageFile(Context context, String prefix, String ext) throws Throwable {
-        String imageFileName = generateUUIDFileName(prefix);
-
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (storageDir != null) {
-            boolean ignore = storageDir.mkdirs();
-            return File.createTempFile(imageFileName, "." + ext, storageDir);
-        } else {
-            return null;
-        }
-    }
 }
