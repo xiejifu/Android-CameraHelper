@@ -1,6 +1,6 @@
 # Android-CameraHelper
 
-Using in Activity or in Fragment
+### Using in Activity or in Fragment
 
 ```
 CameraHelper cameraHelper = CameraHelper.newBuilder(this, PHOTO_REQUEST_CODE, GALLERY_REQUEST_CODE, CAMERA_PERMISSION_CODE, STORAGE_PERMISSION_CODE)
