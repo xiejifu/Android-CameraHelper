@@ -24,7 +24,6 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
   super.onActivityResult(requestCode, resultCode, data);
   if ((requestCode == PHOTO_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) && resultCode == RESULT_OK) {
     File file = cameraHelper.onActivityResult(requestCode, resultCode, data);
-    String qwe = "";
   }
 }
 
