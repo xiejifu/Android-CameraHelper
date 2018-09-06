@@ -2,7 +2,7 @@
 
 ### Using in Activity or in Fragment
 
-```
+```java
 CameraHelper cameraHelper = CameraHelper.newBuilder(this, PHOTO_REQUEST_CODE, GALLERY_REQUEST_CODE, CAMERA_PERMISSION_CODE, STORAGE_PERMISSION_CODE)
 .build();
 
