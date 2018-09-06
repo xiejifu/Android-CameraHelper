@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper.CameraHelper;
+package com.robotboy.camerahelper.helper;
 
 import android.Manifest;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
-import com.bukarev.camerahelper.R;
+import com.robotboy.camerahelper.R;
 
 public class CameraPermission {
     private final FragmentActivity activity;

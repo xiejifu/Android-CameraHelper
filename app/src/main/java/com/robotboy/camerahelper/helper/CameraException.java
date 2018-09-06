@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper.CameraHelper;
+package com.robotboy.camerahelper.helper;
 
 public class CameraException extends Throwable {
 

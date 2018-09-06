@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper.CameraHelper;
+package com.robotboy.camerahelper.helper;
 
 import android.content.Context;
 import android.os.Environment;
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class CameraFileHelper {
 
-    private static String generateUUIDFileName(String prefix) {
+    public static String generateUUIDFileName(String prefix) {
         String code = UUID.randomUUID().toString();
         code = code.replace("-", "");
         code = code.replace(" ", "");

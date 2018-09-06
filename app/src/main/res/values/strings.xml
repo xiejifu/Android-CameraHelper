@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CameraHelper</string>
-    <string name="camera_need_explanations">asd</string>
-    <string name="ok">ОК</string>
-    <string name="storage_need_explanations">asfd</string>
+    <string name="start_camera">Start camera</string>
+    <string name="ok">OK</string>-->
+    <string name="camera_need_explanations">Для нормальной работы приложения необходим доступ к камере устройства. Пожалуйста дайте доступ в настройках приложения.</string>
+    <string name="storage_need_explanations">Для нормальной работы приложения необходим доступ к внутреннему хранилищу устройства. Пожалуйста дайте доступ в настройках приложения.</string>
 </resources>

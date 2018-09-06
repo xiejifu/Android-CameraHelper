@@ -1,11 +1,9 @@
-package com.bukarev.camerahelper.CameraHelper;
+package com.robotboy.camerahelper.helper;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,25 +13,23 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 public class ImageHelper {
-    private static String FOLDER_SEPARATOR = "/";
-    private static String READ_MODE = "r";
+
+    public static File handleCameraImage(Context context, Uri data, String path) throws Exception {
+        return new File(path);
+        //return createFileFromUri(context, data);
+    }
 
     public static File handleGalleryImage(Context context, Uri data) throws Exception {
         return createFileFromUri(context, data);
     }
 
     private static File createFileFromUri(Context context, Uri data) throws Exception {
-        //DocumentFile file = DocumentFile.fromSingleUri(context,data);
-        File file = new File(data.getPath());
+        String fileName = CameraFileHelper.generateUUIDFileName(CameraConstants.FILE_NAME_PREFIX);
 
-        String fileName = file.getName();
         File fileCreated;
-        ParcelFileDescriptor parcelFileDescriptor =
-                context.getContentResolver().openFileDescriptor(data, READ_MODE);
-        InputStream inputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
-        String filePath = context.getExternalCacheDir()
-                + FOLDER_SEPARATOR
-                + fileName;
+        InputStream inputStream = context.getContentResolver().openInputStream(data);
+        String FOLDER_SEPARATOR = "/";
+        String filePath = context.getExternalCacheDir() + FOLDER_SEPARATOR + fileName;
 
         if (!createFile(filePath)) {
             return new File(filePath);

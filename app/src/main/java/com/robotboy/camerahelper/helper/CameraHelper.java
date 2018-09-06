@@ -1,4 +1,4 @@
-package com.bukarev.camerahelper.CameraHelper;
+package com.robotboy.camerahelper.helper;
 
 import android.Manifest;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -29,6 +28,7 @@ public class CameraHelper {
     private CameraErrorInterface errorInterface;
     //state vars
     private Uri photoUri = null;
+    private String absolutePath = null;
     private boolean isSelfie;
 
     private CameraHelper() {
@@ -50,12 +50,17 @@ public class CameraHelper {
         }
     }
 
-    private void setCurrentUri(Uri uri) {
+    private void setCurrentImage(Uri uri, String path) {
         photoUri = uri;
+        absolutePath = path;
     }
 
-    private Uri getCurrentUri() {
+    public Uri getCurrentUri() {
         return photoUri;
+    }
+
+    private String getAbsolutePath() {
+        return absolutePath;
     }
 
     private boolean checkCameraFeature(@NonNull Context context, @NonNull Intent testIntent) {
@@ -73,13 +78,11 @@ public class CameraHelper {
         return null;
     }
 
-    private void grantUriPermissionsForLollipop(@NonNull FragmentActivity activity, @NonNull Intent takePictureIntent, @NonNull Uri photoURI) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-            for (ResolveInfo resolveInfo : resInfoList) {
-                String packageName = resolveInfo.activityInfo.packageName;
-                activity.grantUriPermission(packageName, photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            }
+    private void grantUriPermissions(@NonNull FragmentActivity activity, @NonNull Intent takePictureIntent, @NonNull Uri photoURI) {
+        List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            activity.grantUriPermission(packageName, photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
     }
 
@@ -90,9 +93,9 @@ public class CameraHelper {
             File imageFile = getInternalCameraFile(activity);
             if (cameraOk && imageFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(activity, CameraConstants.AUTHORITY, imageFile);
-                setCurrentUri(photoURI);
+                setCurrentImage(photoURI, imageFile.getAbsolutePath());
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                grantUriPermissionsForLollipop(activity, takePictureIntent, photoURI);
+                grantUriPermissions(activity, takePictureIntent, photoURI);
                 if (isSelfie) {
                     takePictureIntent.putExtra(CameraConstants.SELFIE_PARAM1, android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
                     takePictureIntent.putExtra(CameraConstants.SELFIE_PARAM2, true);
@@ -157,7 +160,7 @@ public class CameraHelper {
         Intent photoPickerIntent = prepareGalleryIntent();
         try {
             if (photoPickerIntent != null) {
-                setCurrentUri(null);
+                setCurrentImage(null, null);
                 startIntentForResult(photoPickerIntent, galleryRequestCode);
             } else {
                 if (errorInterface != null) {
@@ -186,8 +189,11 @@ public class CameraHelper {
         if (photoUri != null) {
             savedInstanceState.putString(CameraConstants.PHOTO_URI_STATE, photoUri.toString());
         }
-        savedInstanceState.putBoolean(CameraConstants.IS_SELFIE_STATE, isSelfie);
+        if (absolutePath != null) {
+            savedInstanceState.putString(CameraConstants.PHOTO_PATH_STATE, absolutePath);
+        }
 
+        savedInstanceState.putBoolean(CameraConstants.IS_SELFIE_STATE, isSelfie);
         savedInstanceState.putInt(CameraConstants.CAMERA_PERMISSIONS_REQUEST_CODE, cameraPermissionsRequestCode);
         savedInstanceState.putInt(CameraConstants.STORAGE_PERMISSIONS_REQUEST_CODE, storagePermissionsRequestCode);
         savedInstanceState.putInt(CameraConstants.PHOTO_REQUEST_CODE, photoRequestCode);
@@ -196,6 +202,9 @@ public class CameraHelper {
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(CameraConstants.PHOTO_PATH_STATE)) {
+                absolutePath = savedInstanceState.getString(CameraConstants.PHOTO_PATH_STATE);
+            }
             if (savedInstanceState.containsKey(CameraConstants.PHOTO_URI_STATE)) {
                 photoUri = Uri.parse(savedInstanceState.getString(CameraConstants.PHOTO_URI_STATE));
             }
@@ -232,7 +241,7 @@ public class CameraHelper {
     public File onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
             if (requestCode == photoRequestCode && resultCode == FragmentActivity.RESULT_OK) {
-                return ImageHelper.handleGalleryImage(getContextFragmentActivity(), getCurrentUri());
+                return ImageHelper.handleCameraImage(getContextFragmentActivity(), getCurrentUri(), getAbsolutePath());
             } else if (requestCode == galleryRequestCode && resultCode == FragmentActivity.RESULT_OK) {
                 return ImageHelper.handleGalleryImage(getContextFragmentActivity(), data.getData());
             }
